@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تشخيص حمى الضنك الذكي | Smart Dengue Diagnosis</title>
+    <meta name="description"
+        content="نظام ذكي يعتمد على التعلم الآلي لتشخيص احتمالية الإصابة بحمى الضنك وتقديم الإرشادات الطبية الأولية.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Phosphor Icons (Premium open source icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#landing" class="logo">
+                <i class="ph ph-heartbeat"></i>
+                <span class="logo-text">ميديك<span class="highlight">سيرف</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#landing" class="nav-link active" data-page="landing">الترحيبية</a></li>
+                <li><a href="#home" class="nav-link" data-page="home">الرئيسية</a></li>
+                <li><a href="#examination" class="nav-link" data-page="examination">الفحص</a></li>
+                <li><a href="#result" class="nav-link" data-page="result">النتائج</a></li>
+                <li><a href="#advice" class="nav-link" data-page="advice">التوصيات</a></li>
+
+                <li style="margin-right: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                    <a href="login.html" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.95rem;">تسجيل
+                        الدخول <i class="ph ph-sign-in"></i></a>
+                </li>
+            </ul>
+            <div class="mobile-menu-btn">
+                <i class="ph ph-list"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- 1. Landing Page (ترحيبية) -->
+        <section id="landing" class="page-section active-page">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <span class="badge">نظام طبي متطور</span>
+                    <h1 class="hero-title">رعايتك الصحية الموثوقة، <span>في أي وقت</span> وفي أي مكان!</h1>
+                    <p class="hero-description">نقدم أحدث التقنيات الطبية المدعومة بالذكاء الاصطناعي لتشخيص حمى الضنك
+                        بدقة وسرعة. احصل على استشارتك المبدئية بخطوات بسيطة.</p>
+                    <div class="hero-buttons">
+                        <a href="#home" class="btn btn-primary" onclick="window.navigate('home')">ابدأ الآن <i
+                                class="ph ph-arrow-left"></i></a>
+                        <a href="#advice" class="btn btn-secondary" onclick="window.navigate('advice')">تعرف على
+                            المزيد</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="ph-fill ph-check-circle"></i>
+                            <div>
+                                <h3 class="stat-value">96%</h3>
+                                <p class="stat-label">دقة التشخيص</p>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="ph-fill ph-users"></i>
+                            <div>
+                                <h3 class="stat-value">آمن وموثوق</h3>
+                                <p class="stat-label">بيانات محمية</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="image-wrapper decoration-blob">
+                        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                            alt="طبيب محترف">
+                        <div class="floating-card top-left">
+                            <i class="ph-fill ph-shield-check"></i>
+                            <div>
+                                <h4>تشخيص ذكي</h4>
+                                <p>يعمل بالذكاء الاصطناعي</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Home Page (رئيسية) -->
+        <section id="home" class="page-section">
+            <div class="section-header">
+                <h2>ما الذي يميز خدماتنا الطبية؟</h2>
+                <p>نقرب الرعاية الطبية عالية الجودة إليك من خلال التكنولوجيا الحديثة.</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="feature-card">
+                    <div class="icon-box icon-teal">
+                        <i class="ph-fill ph-stethoscope"></i>
+                    </div>
+                    <h3>تشخيص فوري</h3>
+                    <p>خوارزميات ذكية مدربة بعناية لتحليل الأعراض وتقديم نظرة شاملة وفورية لحالتك الصحية المتعلقة بحمى
+                        الضنك.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-box icon-blue">
+                        <i class="ph-fill ph-file-text"></i>
+                    </div>
+                    <h3>سهولة وتسجيل سريع</h3>
+                    <p>واجهة مستخدم بسيطة ومريحة تجعل عملية إدخال الأعراض والمؤشرات الحيوية سهلة وواضحة للجميع.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-box icon-purple">
+                        <i class="ph-fill ph-first-aid"></i>
+                    </div>
+                    <h3>إرشادات موثوقة</h3>
+                    <p>توصيات طبية أولية بناءً على مخرجات النظام لمساعدتك في اتخاذ الخطوة الصحيحة للرعاية.</p>
+                </div>
+            </div>
+
+            <div class="cta-banner">
+                <div class="cta-content">
+                    <h2>هل تشعر بأعراض غير اعتيادية؟</h2>
+                    <p>لا تتردد في إجراء التقييم المبدئي الآن. يستغرق الأمر أقل من دقيقة.</p>
+                </div>
+                <a href="#examination" class="btn btn-white" onclick="window.navigate('examination')">إجراء فحص <i
+                        class="ph ph-arrow-left"></i></a>
+            </div>
+        </section>
+
+        <!-- 3. Examination Page (فحص) -->
+        <section id="examination" class="page-section">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>نموذج التقييم الطبي</h2>
+                    <p>الرجاء الإجابة على الأسئلة التالية بدقة للحصول على أفضل تشخيص ممكن لحالتك.</p>
+                </div>
+
+                <form id="diagnosisForm" class="diagnosis-form">
+
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input type="text" name="patient_name" class="form-control" placeholder="أدخل اسمك الكامل"
+                            required
+                            style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 0.75rem; font-family: 'Cairo', sans-serif;">
+                    </div>
+
+                    <div class="form-group" style="display: flex; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <label>العمر</label>
+                            <input type="number" name="age" class="form-control" placeholder="أدخل عمرك" min="1"
+                                max="120" required
+                                style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 0.75rem; font-family: 'Cairo', sans-serif;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>الجنس</label>
+                            <select name="gender" class="form-control" required
+                                style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 0.75rem; font-family: 'Cairo', sans-serif;">
+                                <option value="" disabled selected>اختر الجنس</option>
+                                <option value="0">ذكر</option>
+                                <option value="1">أنثى</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>هل تعاني من حمى شديدة مفاجئة؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="fever" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="fever" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تشعر بصداع شديد أو مستمر؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="headache" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="headache" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من ألم خلف العينين؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="eye_pain" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="eye_pain" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تشعر بآلام شديدة في المفاصل والعضلات؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="joint_muscle_pain" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="joint_muscle_pain" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من الغثيان أو القيء؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="nausea_vomiting" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="nausea_vomiting" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل ظهر طفح جلدي على جسمك مؤخراً؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="rash" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="rash" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تلاحظ أي نزيف خفيف (مثل نزيف اللثة أو الأنف)؟</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="bleeding" value="1" required>
+                                <span class="radio-content">نعم</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="bleeding" value="0">
+                                <span class="radio-content">لا</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>أعراض أخرى (اختياري)</label>
+                        <textarea name="other_symptoms" class="form-control"
+                            placeholder="اكتب أي أعراض إضافية تشعر بها..." rows="3"
+                            style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 0.75rem; font-family: 'Cairo', sans-serif; resize: vertical;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block submit-btn" id="submitBtn">
+                        <span>تحليل النتيجة</span>
+                        <i class="ph-bold ph-magnifying-glass"></i>
+                        <div class="loader-spinner" style="display: none;"></div>
+                    </button>
+                    <p id="error-message" class="error-msg"></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- 4. Result Page (نتائج) -->
+        <section id="result" class="page-section">
+            <div class="result-container" id="resultCard">
+                <div class="result-icon pulse-animation" id="resultIcon">
+                    <i class="ph-fill ph-spinner-gap"></i>
+                </div>
+                <h2 id="resultTitle" class="result-title">في انتظار البيانات...</h2>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="probabilityFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>نسبة الاحتمالية</span>
+                        <span id="probabilityText" class="probability-val">0%</span>
+                    </div>
+                </div>
+
+
+                <div class="result-details card" style="margin-bottom: 1.5rem;">
+                    <h3>تفاصيل التقييم</h3>
+                    <p id="resultMessage" class="result-msg">يُرجى ملء نموذج الفحص أولاً للحصول على النتيجة هنا.</p>
+                </div>
+
+                <div class="result-details card" id="multiDiseaseCard" style="display: none;">
+                    <h3>تحليل الأمراض المحتملة</h3>
+                    <div id="diseaseBreakdown"
+                        style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                        <!-- Disease bars injected via JS -->
+                    </div>
+                </div>
+
+                <div class="action-buttons" id="resultActions" style="display: none;">
+                    <button class="btn btn-primary" onclick="window.navigate('advice')">عرض التوصيات <i
+                            class="ph ph-arrow-left"></i></button>
+                    <button class="btn btn-outline" onclick="window.navigate('examination')">إعادة الفحص <i
+                            class="ph ph-arrow-clockwise"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Advice Page (توصيات) -->
+        <section id="advice" class="page-section">
+            <div class="section-header">
+                <h2>التوصيات والإرشادات الطبية</h2>
+                <p>إرشادات عامة للوقاية والتعامل مع حالات الاشتباه بحمى الضنك.</p>
+            </div>
+
+            <div class="advice-card-container" id="personalAdviceContainer" style="display: none;">
+                <div class="advice-card special-advice">
+                    <div class="advice-icon">
+                        <i class="ph-fill ph-star"></i>
+                    </div>
+                    <div class="advice-content">
+                        <h3>توصية مخصصة لحالتك</h3>
+                        <p id="personalAdviceText">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-layout mt-4">
+                <div class="advice-card">
+                    <div class="advice-icon bg-blue">
+                        <i class="ph-fill ph-drop"></i>
+                    </div>
+                    <div class="advice-content">
+                        <h3>الترطيب المستمر</h3>
+                        <p>شرب كميات وفيرة من المياه والسوائل لتعويض ما يفقده الجسم ولمنع الجفاف الشديد الذي قد يصاحب
+                            الحمى.</p>
+                    </div>
+                </div>
+
+                <div class="advice-card">
+                    <div class="advice-icon bg-green">
+                        <i class="ph-fill ph-bed"></i>
+                    </div>
+                    <div class="advice-content">
+                        <h3>الراحة التامة</h3>
+                        <p>أخذ قسط كافٍ من الراحة والنوم وتجنب المجهود البدني الشاق لمساعدة جهاز المناعة على مقاومة
+                            العدوى.</p>
+                    </div>
+                </div>
+
+                <div class="advice-card">
+                    <div class="advice-icon bg-red">
+                        <i class="ph-fill ph-warning-circle"></i>
+                    </div>
+                    <div class="advice-content">
+                        <h3>تجنب بعض المسكنات</h3>
+                        <p>تجنب تماماً استخدام المسكنات التي تحتوي على الأسبرين أو الإيبوبروفين لأنها قد تزيد من خطر
+                            النزيف. استخدم الباراسيتامول فقط.</p>
+                    </div>
+                </div>
+
+                <div class="advice-card">
+                    <div class="advice-icon bg-purple">
+                        <i class="ph-fill ph-bug-beetle"></i>
+                    </div>
+                    <div class="advice-content">
+                        <h3>الوقاية من البعوض</h3>
+                        <p>استخدام طارد الحشرات والمبيدات الآمنة، وتركيب شبكات النوافذ، وتغطية خزانات المياه لتجنب لدغات
+                            البعوض الناقل للمرض.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="doctor-banner">
+                <div class="doc-avatar">
+                    <i class="ph-fill ph-user-md"></i>
+                </div>
+                <div class="doc-info">
+                    <h4>تنويه طبي هام</h4>
+                    <p>هذا التشخيص يعتمد على الذكاء الاصطناعي كتقييم أولي فقط ولا يغني عن استشارة الطبيب المختص أو إجراء
+                        التحاليل المخبرية المعتمدة.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2026 ميديك سيرف - مشروع تشخيص حمى الضنك الذكي. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
