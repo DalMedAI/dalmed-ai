@@ -33,7 +33,7 @@ def get_status():
     })
 
 @app.route('/api/predict', methods=['POST'])
-def diagnose():
+def predict():
     if model is None:
         return jsonify({"error": "Model not loaded. Contact administrator."}), 500
         

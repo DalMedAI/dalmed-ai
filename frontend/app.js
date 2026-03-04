@@ -128,12 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Determine API URL
-                const apiUrl =  "https://medaihub.onrender.com/diagnose";
+                const apiUrl =  "https://medaihub.onrender.com/predict";
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(features)
+                    body: JSON.stringify(formData)
                 });
 
                 if (!response.ok) {
