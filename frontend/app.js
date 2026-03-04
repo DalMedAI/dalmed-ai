@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Routing System ---
     const navLinks = document.querySelectorAll('.nav-link');
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Determine API URL
-                const apiUrl = '/api/predict';
+                const apiUrl =  "https://medaihub.onrender.com/diagnose";
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
