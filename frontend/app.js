@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(features)
                 });
 
                 if (!response.ok) {
