@@ -1008,3 +1008,71 @@ a {
 .register-link:hover {
     text-decoration: underline;
 }
+/* --- Responsive Design --- */
+
+/* للشاشات المتوسطة (تابلت) */
+@media (max-width: 992px) {
+  .hero-container {
+    Grid-template-columns: 1fr;
+    Text-align: center;
+    Gap: 2rem;
+  }
+
+  .hero-stats,
+  .hero-buttons {
+    Justify-content: center;
+  }
+
+  .cta-banner {
+    Flex-direction: column;
+    Text-align: center;
+    Gap: 2rem;
+  }
+}
+
+/* للشاشات الصغيرة (موبايل) */
+@media (max-width: 768px) {
+  .nav-links {
+    Display: none;
+  }
+
+  .mobile-menu-btn {
+    Display: block;
+  }
+
+  .hero-title {
+    Font-size: 2rem;
+  }
+
+  .form-container,
+  .result-container {
+    Padding: 1.5rem;
+    Width: 100%;
+  }
+
+  .radio-group {
+    Grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    Flex-direction: column;
+    Gap: 1rem;
+  }
+
+  .advice-card {
+    Flex-direction: column;
+    Text-align: center;
+    Align-items: center;
+  }
+
+  .doctor-banner {
+    Flex-direction: column;
+    Text-align: center;
+  }
+
+  .btn {
+    Width: 100%;
+    Font-size: 1rem;
+    Padding: 1rem;
+  }
+}
