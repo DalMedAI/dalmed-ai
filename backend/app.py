@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib
 import numpy as np
@@ -15,7 +15,12 @@ CORS(app)  # السماح بالاتصال من أي واجهة
 # الصفحة الرئيسية
 @app.route('/')
 def index():
-    return app.send_static_file('login.html')
+    return send_from_directory(app.static_folder, 'index.html')
+
+# تقديم أي ملفات ثابتة (CSS, JS, Html)
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 
 # تحميل النموذج
 MODEL_PATH = 'dengue_model.pkl'

@@ -108,7 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
       errorMsg.textContent = '';
 
       try {
-        const apiUrl = "https://mediaserver.onrender.com/api/predict";
+        // Use localhost URL for local dev, else use relative path for Render
+        const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+          ? 'http://127.0.0.1:10000/api/predict' 
+          : '/api/predict';
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import joblib
 
@@ -13,18 +15,24 @@ df = pd.read_csv("dengue_dataset.csv")
 df["ns1_result"] = df["ns1_result"].map({"Negative":0, "Positive":1})
 df["igm_result"] = df["igm_result"].map({"Negative":0, "Positive":1})
 df["pcr_result"] = df["pcr_result"].map({"Negative":0, "Positive":1})
+if "gender" in df.columns:
+    df["gender"] = df["gender"].map({"Female":0, "Male":1})
 df["final_diagnosis"] = df["final_diagnosis"].map({"Non-dengue":0, "Confirmed dengue":1})
 
 # تنظيف البيانات
 df = df.dropna().drop_duplicates()
 
 # تحديد X و y
-X = df.drop(["case_id","final_diagnosis"], axis=1)
+columns_to_drop = ["final_diagnosis"]
+if "case_id" in df.columns:
+    columns_to_drop.append("case_id")
+X = df.drop(columns_to_drop, axis=1)
 y = df["final_diagnosis"]
 
-# تقسيم البيانات
+print("تقسيم البيانات...")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+print("إنشاء النموذج...")
 # إنشاء النموذج
 model = XGBClassifier(
     n_estimators=200,
@@ -32,15 +40,17 @@ model = XGBClassifier(
     max_depth=6,
     random_state=42,
     eval_metric="mlogloss",
-    use_label_encoder=False
+    use_label_encoder=False,
+    n_jobs=1
 )
 
+print("تدريب النموذج...")
 # تدريب النموذج
 model.fit(X_train, y_train)
 
-# التقييم
+print("التقييم...")
 y_pred = model.predict(X_test)
-print(f"🔥 Accuracy: {accuracy_score(y_test, y_pred)*100:.2f}%")
+print(f"Accuracy: {accuracy_score(y_test, y_pred)*100:.2f}%")
 print(classification_report(y_test, y_pred))
 
 # Confusion Matrix
