@@ -23,7 +23,9 @@ def serve_static(path):
     return send_from_directory(app.static_folder, path)
 
 # تحميل النموذج
-MODEL_PATH = 'dengue_model.pkl'
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BACKEND_DIR, 'dengue_model.pkl')
+
 if os.path.exists(MODEL_PATH):
     model = joblib.load(MODEL_PATH)
     print(f"✅ Loaded model from {MODEL_PATH}")
