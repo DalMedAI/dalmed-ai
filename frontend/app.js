@@ -109,9 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         // Use localhost URL for local dev, else use relative path for Render
-        const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
           ? 'http://127.0.0.1:10000/api/predict' 
           : '/api/predict';
+          
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navigate('result');
       } catch (error) {
         console.error('Prediction Error:', error);
-        errorMsg.textContent = 'تعذر الاتصال بالخادم. تأكد من تشغيل الـ Backend.';
+        errorMsg.textContent = 'تعذر الاتصال بالخادم. تأكد من إدخال البيانات الصحيحة أو الاتصال بالإنترنت.';
       } finally {
         submitBtn.disabled = false;
         btnText.textContent = 'تحليل النتيجة';
