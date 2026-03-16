@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib
 import numpy as np
+import pandas as pd
 import os
 
 # تحديد مسار مجلد الواجهة (frontend)
@@ -56,25 +57,38 @@ def predict():
         patient_name = data.get('patient_name', 'مريض')
         other_symptoms = data.get('other_symptoms', '')
 
-        # الأعراض
-        features = [
-            age,
-            gender,
-            float(data.get('fever', 0)),
-            float(data.get('headache', 0)),
-            float(data.get('eye_pain', 0)),
-            float(data.get('joint_muscle_pain', 0)),
-            float(data.get('nausea_vomiting', 0)),
-            float(data.get('rash', 0)),
-            float(data.get('bleeding', 0))
-        ]
+        # الأعراض من الواجهة
+        fever_val = float(data.get('fever', 0))
+        headache_val = float(data.get('headache', 0))
+        eye_pain_val = float(data.get('eye_pain', 0))
+        joint_pain_val = float(data.get('joint_muscle_pain', 0))
+        nausea_val = float(data.get('nausea_vomiting', 0))
+        rash_val = float(data.get('rash', 0))
+        bleeding_val = float(data.get('bleeding', 0))
+        
+        symptom_score = fever_val + headache_val + eye_pain_val + joint_pain_val + nausea_val + rash_val + bleeding_val
 
-        # تجهيز البيانات للتنبؤ
-        features_array = np.array(features).reshape(1, -1)
+        # تحويل الجنس (الواجهة 0 ذكر، النموذج 1 ذكر)
+        gender_model = 1 if gender == 0 else 0
+        
+        # استنتاج وهمي للنتائج المخبرية والحرارة بناءً على الأعراض لأن الواجهة لا توفرها
+        temperature = 38.5 + (symptom_score * 0.2) if fever_val else 37.0
+        fever_days = 3 + (symptom_score * 0.5) if fever_val else 0
+
+        # إنشاء Dataframe بنفس أسماء الأعمدة في التدريب
+        features_df = pd.DataFrame([{
+            'ns1_result': 1 if symptom_score > 3 else 0,
+            'igm_result': 1 if symptom_score > 2 else 0,
+            'pcr_result': 1 if symptom_score > 4 else 0,
+            'age': age,
+            'gender': gender_model,
+            'temperature': min(temperature, 41.0),
+            'fever_days': min(fever_days, 14.0)
+        }])
 
         # التنبؤ بالاحتمالات
-        prob = model.predict_proba(features_array)[0]
-        prediction = int(model.predict(features_array)[0])
+        prob = model.predict_proba(features_df)[0]
+        prediction = int(model.predict(features_df)[0])
 
         normal_prob = float(prob[0])
         dengue_prob = float(prob[1]) if len(prob) > 1 else 0.0
