@@ -1,7 +1,12 @@
 node_modules/
 .env
 venv/
-_pycache_/
+.venv/
+__pycache__/
+*.pyc
 *.log
 dist/
 build/
+backend/diagnoses.db
+backend/confusion_matrix.png
+backend/feature_importance.png
