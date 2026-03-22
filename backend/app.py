@@ -151,10 +151,10 @@ def predict():
         fever_days = (symptom_score * 0.8) if symptom_score > 0 else 0
 
         # 6. توليف نتائج المختبر (بناءً على التوزان الجديد)
-        # إذا كان المجموع الموزون مرتفعاً، تزيد احتمالية النتائج الإيجابية
-        ns1_val = 1 if (symptom_score > 2.2) else 0
-        igm_val = 1 if (symptom_score > 1.5) else 0
-        pcr_val = 1 if (symptom_score > 3.0) else 0
+        # جعل النتائج الإيجابية أصعب قليلاً لترك مساحة للملاريا في الحالات المشتركة
+        ns1_val = 1 if (symptom_score > 3.5) else 0 # رفع الحد من 2.2 لـ 3.5
+        igm_val = 1 if (symptom_score > 2.5) else 0 # رفع الحد من 1.5 لـ 2.5
+        pcr_val = 1 if (symptom_score > 4.5) else 0 
 
         # إنشاء Dataframe بنفس أسماء الأعمدة في التدريب
         features_df = pd.DataFrame([{
