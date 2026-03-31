@@ -12,38 +12,38 @@ import numpy as np
 
 # تحديد المسارات برمجياً
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "dengue_malaria_dataset.xlsx")
+DATA_PATH = os.path.join(BASE_DIR, "dataset.csv") 
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "dengue_model.pkl")
 
-# قراءة البيانات (دعم اكسل)
+# قراءة البيانات
 if not os.path.exists(DATA_PATH):
     print(f"Error: Dataset not found at {DATA_PATH}")
     exit(1)
 
 print(f"Loading data from {DATA_PATH}...")
-try:
-    df = pd.read_excel(DATA_PATH)
-except Exception as e:
-    print(f"Error reading Excel: {e}. Trying CSV...")
-    df = pd.read_csv(DATA_PATH.replace(".xlsx", ".csv"))
+df = pd.read_csv(DATA_PATH)
 
 # تحويل النصوص لرقم
-def robust_map(series, mapping):
-    return series.astype(str).str.strip().map(mapping)
-
 mappings = {
-    "ns1_result": {"Negative": 0, "Positive": 1, "0": 0, "1": 1, "0.0": 0, "1.0": 1, "nan": 0},
-    "igm_result": {"Negative": 0, "Positive": 1, "0": 0, "1": 1, "0.0": 0, "1.0": 1, "nan": 0},
-    "pcr_result": {"Negative": 0, "Positive": 1, "0": 0, "1": 1, "0.0": 0, "1.0": 1, "nan": 0},
-    "final_diagnosis": {"Non-dengue": 0, "Confirmed dengue": 1, "Malaria": 2}
+    "diagnosis": {
+        "Dengue": 0,
+        "Malaria": 1,
+        "Typhoid": 2,
+        "Flu": 3,
+        "COVID": 4
+    }
 }
 
-if "gender" in df.columns:
-    df["gender"] = robust_map(df["gender"], {"Female": 0, "Male": 1})
+# قائمة الأعمدة المطلوبة للتدريب بالترتيب الصحيح (17 feature)
+expected_features = [
+    'age', 'gender', 'fever', 'headache', 'fatigue', 'vomiting', 
+    'eye_pain', 'rash', 'joint_pain', 'bleeding', 'chills', 
+    'sweating', 'anemia', 'jaundice', 'abdominal_pain', 
+    'loss_of_appetite', 'diarrhea_constipation'
+]
 
-for col, mapping in mappings.items():
-    if col in df.columns:
-        df[col] = robust_map(df[col], mapping)
+if "diagnosis" in df.columns:
+    df["diagnosis"] = df["diagnosis"].map(mappings["diagnosis"])
 
 # تنظيف البيانات
 df = df.dropna().drop_duplicates()
@@ -53,23 +53,23 @@ if df.empty:
     exit(1)
 
 # تحديد X و y
-columns_to_drop = ["final_diagnosis"]
-if "case_id" in df.columns:
-    columns_to_drop.append("case_id")
-X = df.drop(columns_to_drop, axis=1)
-y = df["final_diagnosis"]
+X = df[expected_features]
+y = df["diagnosis"]
+
+print(f"Training on {len(X.columns)} features: {X.columns.tolist()}")
+print(f"Classes found: {df['diagnosis'].unique()}")
 
 print("Splitting data...")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-print("Creating Multi-class model...")
+print("Creating XGBoost model...")
 model = XGBClassifier(
-    n_estimators=200,
-    learning_rate=0.05,
-    max_depth=6,
+    n_estimators=500,
+    learning_rate=0.04,
+    max_depth=7,
     random_state=42,
     objective='multi:softprob',
-    num_class=3,
+    num_class=5,
     eval_metric="mlogloss",
     n_jobs=-1
 )
@@ -84,22 +84,24 @@ print(classification_report(y_test, y_pred))
 
 # Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
-plt.figure(figsize=(8, 6))
-labels = ["Normal", "Dengue", "Malaria"]
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels[:len(np.unique(y))], yticklabels=labels[:len(np.unique(y))])
-plt.title("Multi-class Confusion Matrix")
+plt.figure(figsize=(12, 10))
+labels = ["Dengue", "Malaria", "Typhoid", "Flu", "COVID"]
+present_labels = [labels[i] for i in sorted(np.unique(np.concatenate([y_test, y_pred])))]
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=present_labels, yticklabels=present_labels)
+plt.title("Multi-Disease Model Confusion Matrix")
 plt.ylabel("Actual")
 plt.xlabel("Predicted")
 plt.savefig(os.path.join(BASE_DIR, "confusion_matrix.png"))
 plt.close()
 
 # Feature Importance
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 12))
 importances = model.feature_importances_
 indices = importances.argsort()[::-1]
-sns.barplot(x=importances[indices], y=[X.columns[i] for i in indices], hue=[X.columns[i] for i in indices], palette="viridis", legend=False)
-plt.title("Feature Importance - Multi-class")
+sns.barplot(x=importances[indices], y=[X.columns[i] for i in indices], palette="viridis")
+plt.title("Feature Importance - Comprehensive Dataset")
 plt.xlabel("Relative Importance")
+plt.tight_layout()
 plt.savefig(os.path.join(BASE_DIR, "feature_importance.png"))
 plt.close()
 

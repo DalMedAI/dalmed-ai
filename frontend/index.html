@@ -180,101 +180,154 @@
                             </select>
                         </div>
                     </div>
+                    <!-- القسم الأول: أعراض عامة -->
+                    <div class="form-section-title">
+                        <i class="ph-bold ph-activity"></i>
+                        <span>أعراض عامة</span>
+                    </div>
+
                     <div class="form-group">
-                        <label>هل تعاني من حمى شديدة مفاجئة؟</label>
+                        <label>هل تعاني من حمى؟ (Fever)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="fever" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="fever" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="fever" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="fever" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="fever" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>هل تشعر بصداع شديد أو مستمر؟</label>
+                        <label>هل تعاني من صداع؟ (Headache)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="headache" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="headache" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
-                        </div>
-                    </div>
-
-<div class="form-group">
-                        <label>هل تعاني من ألم خلف العينين؟</label>
-                        <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="eye_pain" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="eye_pain" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="headache" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="headache" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="headache" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>هل تشعر بآلام شديدة في المفاصل والعضلات؟</label>
+                        <label>هل تشعر بإرهاق شديد؟ (Fatigue)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="joint_muscle_pain" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="joint_muscle_pain" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="fatigue" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="fatigue" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="fatigue" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>هل تعاني من الغثيان أو القيء؟</label>
+                        <label>هل تعاني من قيء أو غثيان؟ (Vomiting)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="nausea_vomiting" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="nausea_vomiting" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="vomiting" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="vomiting" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="vomiting" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <!-- القسم الثاني: أعراض نوعية -->
+                    <div class="form-section-title">
+                        <i class="ph-bold ph-virus"></i>
+                        <span>أعراض نوعية</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من ألم خلف العين؟ (Eye pain)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="eye_pain" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="eye_pain" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>هل ظهر طفح جلدي على جسمك مؤخراً؟</label>
+                        <label>هل تعاني من طفح جلدي؟ (Rash)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="rash" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="rash" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="rash" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="rash" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>هل تلاحظ أي نزيف خفيف (مثل نزيف اللثة أو الأنف)؟</label>
+                        <label>هل تعاني من آلام في المفاصل أو العضلات؟ (Joint/Muscle pain)</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="bleeding" value="1" required>
-                                <span class="radio-content">نعم</span>
-                            </label>
-                            <label class="radio-card">
-                                <input type="radio" name="bleeding" value="0">
-                                <span class="radio-content">لا</span>
-                            </label>
+                            <label class="radio-card"><input type="radio" name="joint_pain" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="joint_pain" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="joint_pain" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من نزيف خفيف (اللثة أو الأنف)؟ (Bleeding)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="bleeding" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="bleeding" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <!-- القسم الثالث: مؤشرات حيوية -->
+                    <div class="form-section-title">
+                        <i class="ph-bold ph-thermometer-hot"></i>
+                        <span>مؤشرات حيوية</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من قشعريرة (برد شديد)؟ (Chills)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="chills" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="chills" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من تعرق شديد؟ (Sweating)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="sweating" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="sweating" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من فقر دم؟ (Anemia)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="anemia" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="anemia" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من اصفرار في العين أو الجلد؟ (Jaundice)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="jaundice" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="jaundice" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <!-- القسم الرابع: الجهاز الهضمي وأخرى -->
+                    <div class="form-section-title">
+                        <i class="ph-bold ph-stomach"></i>
+                        <span>الجهاز الهضمي وأخرى</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من ألم في البطن؟ (Abdominal pain)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="abdominal_pain" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="abdominal_pain" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="abdominal_pain" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من فقدان الشهية؟ (Loss of appetite)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="loss_of_appetite" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="loss_of_appetite" value="0"><span class="radio-content">لا</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>هل تعاني من إسهال أو إمساك؟ (Diarrhea/Constipation)</label>
+                        <div class="radio-group">
+                            <label class="radio-card"><input type="radio" name="diarrhea_constipation" value="1" required><span class="radio-content">نعم</span></label>
+                            <label class="radio-card"><input type="radio" name="diarrhea_constipation" value="0.5"><span class="radio-content">أحياناً</span></label>
+                            <label class="radio-card"><input type="radio" name="diarrhea_constipation" value="0"><span class="radio-content">لا</span></label>
                         </div>
                     </div>
 
