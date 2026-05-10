@@ -595,6 +595,16 @@ a {
     font-weight: bold;
 }
 
+.prediction-warning {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-left: 4px solid var(--warning);
+    background: rgba(245, 158, 11, 0.12);
+    color: #7c4a03;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+
 /* --- Result Page --- */
 #resultCard {
     display: none;
