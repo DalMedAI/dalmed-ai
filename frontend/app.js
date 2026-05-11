@@ -74,7 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultTitle = document.getElementById('resultTitle');
   const progressFill = document.getElementById('probabilityFill');
   const progressText = document.getElementById('probabilityText');
+  const progressInside = document.getElementById('probabilityInside');
   const resultMessage = document.getElementById('resultMessage');
+  const resultSubtitle = document.getElementById('resultSubtitle');
+  const validationWarning = document.getElementById('validationWarning');
+  const aiAnalysisText = document.getElementById('aiAnalysisText');
+  const riskCard = document.getElementById('riskCard');
+  const riskBadge = document.getElementById('riskBadge');
+  const riskDescription = document.getElementById('riskDescription');
+  const recommendedTests = document.getElementById('recommendedTests');
+  const medicalRecommendations = document.getElementById('medicalRecommendations');
   const resultActions = document.getElementById('resultActions');
 
   // Advice DOM Elements
@@ -90,6 +99,35 @@ document.addEventListener('DOMContentLoaded', () => {
     malaria: ['chills', 'sweating', 'anemia', 'jaundice'],
     typhoid: ['abdominal_pain', 'loss_of_appetite', 'diarrhea_constipation']
   };
+  const arabicNumberFormatter = new Intl.NumberFormat('ar-EG', {
+    maximumFractionDigits: 1
+  });
+
+  function toArabicPercent(value) {
+    const number = Number(value || 0);
+    return `${arabicNumberFormatter.format(number)}٪`;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function renderList(container, items, fallback) {
+    if (!container) return;
+    const list = Array.isArray(items) && items.length ? items : [fallback];
+    container.innerHTML = list.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+  }
+
+  function probabilityClass(value) {
+    if (Number(value) >= 75) return 'high';
+    if (Number(value) >= 40) return 'medium';
+    return 'low';
+  }
 
   function validateSymptomSelection(features) {
     const positiveCount = symptomFields.filter(name => Number(features[name]) >= 0.75).length;
@@ -101,14 +139,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (positiveCount === symptomFields.length || symptomLoad >= 13) {
       return {
         valid: false,
-        message: 'المدخلات غير واقعية طبياً، لا يمكن إنشاء تشخيص دقيق.'
+        message: 'تحذير: عدد الأعراض المختارة مرتفع جداً وقد يجعل النتيجة أقل دقة. يرجى مراجعة الاختيارات غير المؤكدة.'
+      };
+    }
+
+    if (symptomLoad >= 9) {
+      return {
+        valid: true,
+        warning: 'تحذير: عدد الأعراض المختارة مرتفع، لذلك سيتم تعديل الاحتمالات لتجنب نتيجة مبالغ فيها.'
       };
     }
 
     if (groupMatches >= 2) {
       return {
         valid: true,
-        warning: 'توجد أعراض متداخلة بين أكثر من مرض، لذلك سيتم خفض مستوى الثقة.'
+        warning: 'تحذير: الأعراض المختارة تتداخل بين عدة أمراض، لذلك قد تكون النتيجة أقل دقة.'
       };
     }
 
@@ -195,24 +240,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const iconElement = resultIcon.querySelector('i');
     resultIcon.className = 'result-icon pulse-animation';
+    progressFill.className = `progress-fill ${probabilityClass(data.probability)}`;
+    progressFill.style.width = '0%';
 
     if (data.no_prediction || data.severity_level === 'No Prediction') {
       resultTitle.textContent = 'لا يمكن إنشاء تشخيص';
+      resultSubtitle.textContent = 'المدخلات الحالية لا تكفي لإنتاج تقييم طبي موثوق.';
       resultTitle.style.color = 'var(--warning)';
       iconElement.className = 'ph-bold ph-warning';
       resultIcon.classList.add('medium');
     } else if (data.severity_level === 'High' || data.severity_level === 'High Confidence') {
-      resultTitle.textContent = 'احتمالية عالية للإصابة';
+      resultTitle.textContent = `احتمالية عالية: ${data.predicted_disease_ar || 'مرض محتمل'}`;
+      resultSubtitle.textContent = 'ينبغي التعامل مع النتيجة بجدية وإجراء الفحوصات المناسبة.';
       resultTitle.style.color = 'var(--danger)';
       iconElement.className = 'ph-bold ph-warning-octagon';
       resultIcon.classList.add('high');
     } else if (data.severity_level === 'Medium' || data.severity_level === 'Medium Confidence') {
-      resultTitle.textContent = 'اشتباه متوسط للإصابة';
+      resultTitle.textContent = `اشتباه متوسط: ${data.predicted_disease_ar || 'مرض محتمل'}`;
+      resultSubtitle.textContent = 'توجد مؤشرات تحتاج متابعة طبية وفحوصات تأكيدية.';
       resultTitle.style.color = 'var(--warning)';
       iconElement.className = 'ph-bold ph-warning';
       resultIcon.classList.add('medium');
     } else {
-      resultTitle.textContent = 'احتمالية ضعيفة للإصابة';
+      resultTitle.textContent = `احتمالية منخفضة: ${data.predicted_disease_ar || 'غير محدد'}`;
+      resultSubtitle.textContent = 'الاحتمال أقل، لكن استمرار الأعراض يحتاج مراجعة مختص.';
       resultTitle.style.color = 'var(--success)';
       iconElement.className = 'ph-bold ph-check-circle';
       resultIcon.classList.add('low');
@@ -220,61 +271,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       progressFill.style.width = `${data.probability}%`;
-      if (data.probability > 75) progressFill.style.background = 'var(--danger)';
-      else if (data.probability > 40) progressFill.style.background = 'var(--warning)';
-      else progressFill.style.background = 'var(--success)';
     }, 300);
 
-    progressText.textContent = `${data.probability}%`;
-    const warnings = Array.isArray(data.warnings) && data.warnings.length
-      ? `<div class="prediction-warning">${data.warnings.join('<br>')}</div>`
-      : '';
-    resultMessage.innerHTML = `<strong>التحليل الآلي:</strong> ${data.message}${warnings}`;
+    const formattedProbability = toArabicPercent(data.probability);
+    progressText.textContent = formattedProbability;
+    progressInside.textContent = formattedProbability;
+
+    const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+    if (warnings.length) {
+      validationWarning.style.display = 'flex';
+      validationWarning.innerHTML = `<i class="ph-bold ph-warning"></i><span>${warnings.map(escapeHtml).join('<br>')}</span>`;
+    } else {
+      validationWarning.style.display = 'none';
+      validationWarning.innerHTML = '';
+    }
+
+    resultMessage.textContent = data.message || 'لا توجد تفاصيل كافية لعرض نتيجة تشخيصية.';
+    aiAnalysisText.textContent = data.ai_analysis || 'لم تتوفر تفاصيل كافية لتفسير سبب التوقع.';
+
+    const risk = data.risk_level || { key: 'low', label: 'منخفضة', description: 'غير محدد' };
+    riskCard.className = `medical-card risk-card risk-${risk.key || 'low'}`;
+    riskBadge.textContent = risk.label || 'غير محدد';
+    riskDescription.textContent = risk.description || 'غير محدد';
+
+    renderList(recommendedTests, data.recommended_tests, 'مراجعة الطبيب لتحديد الفحوصات المناسبة');
+    renderList(medicalRecommendations, data.general_recommendations, 'راجع الطبيب إذا استمرت الأعراض.');
 
     const multiDiseaseCard = document.getElementById('multiDiseaseCard');
     const diseaseBreakdown = document.getElementById('diseaseBreakdown');
     if (data.disease_breakdown && multiDiseaseCard && diseaseBreakdown) {
       multiDiseaseCard.style.display = 'block';
-      diseaseBreakdown.innerHTML = `
-        <div class="disease-stat">
-            <div class="stat-label">حمى الضنك:</div>
-            <div class="stat-bar-container"><div class="stat-bar" style="width: ${data.disease_breakdown.dengue}%"></div></div>
-            <div class="stat-percentage">${data.disease_breakdown.dengue}%</div>
-        </div>
-        <div class="disease-stat">
-            <div class="stat-label">الملاريا:</div>
-            <div class="stat-bar-container"><div class="stat-bar" style="width: ${data.disease_breakdown.malaria}%"></div></div>
-            <div class="stat-percentage">${data.disease_breakdown.malaria}%</div>
-        </div>
-        <div class="disease-stat">
-            <div class="stat-label">التايفويد:</div>
-            <div class="stat-bar-container"><div class="stat-bar" style="width: ${data.disease_breakdown.typhoid}%"></div></div>
-            <div class="stat-percentage">${data.disease_breakdown.typhoid}%</div>
-        </div>
-      `;
+      const diseaseRows = [
+        { key: 'dengue', label: 'حمى الضنك', icon: 'ph-virus' },
+        { key: 'malaria', label: 'الملاريا', icon: 'ph-drop' },
+        { key: 'typhoid', label: 'التايفويد', icon: 'ph-bacteria' }
+      ];
+      diseaseBreakdown.innerHTML = diseaseRows.map(disease => {
+        const value = Number(data.disease_breakdown[disease.key] || 0);
+        return `
+          <div class="disease-stat">
+              <div class="disease-meta">
+                  <i class="ph-bold ${disease.icon}"></i>
+                  <span>${disease.label}</span>
+              </div>
+              <div class="stat-bar-container">
+                  <div class="stat-bar ${probabilityClass(value)}" style="width: ${value}%"></div>
+              </div>
+              <div class="stat-percentage">${toArabicPercent(value)}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     personalAdviceContainer.style.display = 'block';
     if (data.medical_recommendations) {
       const rec = data.medical_recommendations;
       const renderList = items => Array.isArray(items) && items.length
-        ? `<ul>${items.map(item => `<li>${item}</li>`).join('')}</ul>`
+        ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
         : '<ul><li>لا توجد توصيات علاجية محددة.</li></ul>';
+      const recConfidence = toArabicPercent(parseFloat(String(rec.confidence || '0').replace('%', '')));
 
       personalAdviceText.innerHTML = `
-        <strong>التوصيات الطبية (${rec.confidence}):</strong>
-        <p><strong>النتيجة:</strong> ${rec.diagnosis}</p>
+        <strong>التوصيات الطبية (${recConfidence}):</strong>
+        <p><strong>النتيجة:</strong> ${escapeHtml(rec.diagnosis)}</p>
         <p><strong>الأدوية المقترحة:</strong></p>
         ${renderList(rec.recommended_medications)}
         <p><strong>أدوية يجب تجنبها:</strong></p>
         ${renderList(rec.avoid_medications)}
         <p><strong>الرعاية المنزلية:</strong></p>
         ${renderList(rec.home_care)}
-        <p><strong>تنبيه طبي:</strong> ${rec.warning}</p>
-        <p><strong>إخلاء مسؤولية:</strong> ${rec.disclaimer}</p>
+        <p><strong>تنبيه طبي:</strong> ${escapeHtml(rec.warning)}</p>
+        <p><strong>إخلاء مسؤولية:</strong> ${escapeHtml(rec.disclaimer)}</p>
       `;
     } else {
-      personalAdviceText.innerHTML = `<strong>بناءً على نتيجتك (${data.probability}%):</strong> ${data.medical_advice}`;
+      personalAdviceText.innerHTML = `<strong>بناءً على نتيجتك (${toArabicPercent(data.probability)}):</strong> ${escapeHtml(data.medical_advice)}`;
     }
   }
 });

@@ -390,31 +390,90 @@
         <!-- 4. Result Page (نتائج) -->
         <section id="result" class="page-section">
             <div class="result-container" id="resultCard">
-                <div class="result-icon pulse-animation" id="resultIcon">
-                    <i class="ph-fill ph-spinner-gap"></i>
-                </div>
-                <h2 id="resultTitle" class="result-title">في انتظار البيانات...</h2>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="probabilityFill" style="width: 0%"></div>
+                <div class="result-hero">
+                    <div class="result-icon pulse-animation" id="resultIcon">
+                        <i class="ph-fill ph-spinner-gap"></i>
                     </div>
-                    <div class="progress-labels">
-                        <span>نسبة الاحتمالية</span>
-                        <span id="probabilityText" class="probability-val">0%</span>
+                    <div class="result-heading">
+                        <span class="result-kicker"><i class="ph-bold ph-brain"></i> تحليل طبي بالذكاء الاصطناعي</span>
+                        <h2 id="resultTitle" class="result-title">في انتظار البيانات...</h2>
+                        <p id="resultSubtitle" class="result-subtitle">أكمل نموذج الفحص لعرض التحليل الطبي التفصيلي هنا.</p>
                     </div>
                 </div>
 
-
-                <div class="result-details card" style="margin-bottom: 1.5rem;">
-                    <h3>تفاصيل التقييم</h3>
-                    <p id="resultMessage" class="result-msg">يُرجى ملء نموذج الفحص أولاً للحصول على النتيجة هنا.</p>
+                <div class="confidence-panel">
+                    <div class="confidence-header">
+                        <span><i class="ph-bold ph-gauge"></i> نسبة الاحتمالية</span>
+                        <span id="probabilityText" class="probability-val">٠٪</span>
+                    </div>
+                    <div class="progress-bar" aria-label="نسبة الاحتمالية">
+                        <div class="progress-fill" id="probabilityFill" style="width: 0%">
+                            <span id="probabilityInside">٠٪</span>
+                        </div>
+                    </div>
+                    <p class="confidence-note">الألوان تعكس مستوى الخطورة: الأحمر لاحتمال مرتفع، الأصفر لاحتمال متوسط، والأخضر لاحتمال منخفض.</p>
                 </div>
 
-                <div class="result-details card" id="multiDiseaseCard" style="display: none;">
-                    <h3>تحليل الأمراض المحتملة</h3>
-                    <div id="diseaseBreakdown"
-                        style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
-                        <!-- Disease bars injected via JS -->
+                <div id="validationWarning" class="medical-alert" style="display: none;"></div>
+
+                <div class="result-grid">
+                    <article class="medical-card result-details">
+                        <div class="card-title">
+                            <i class="ph-bold ph-clipboard-text"></i>
+                            <h3>تفاصيل التقييم</h3>
+                        </div>
+                        <p id="resultMessage" class="result-msg">يُرجى ملء نموذج الفحص أولاً للحصول على النتيجة هنا.</p>
+                    </article>
+
+                    <article class="medical-card">
+                        <div class="card-title">
+                            <i class="ph-bold ph-brain"></i>
+                            <h3>تحليل الذكاء الاصطناعي</h3>
+                        </div>
+                        <p id="aiAnalysisText">سيظهر سبب التوقع بناءً على الأعراض المختارة.</p>
+                    </article>
+
+                    <article class="medical-card risk-card" id="riskCard">
+                        <div class="card-title">
+                            <i class="ph-bold ph-pulse"></i>
+                            <h3>مستوى الخطورة</h3>
+                        </div>
+                        <div class="risk-badge" id="riskBadge">غير محدد</div>
+                        <p id="riskDescription">سيتم تقدير مستوى الخطورة بعد التحليل.</p>
+                    </article>
+
+                    <article class="medical-card">
+                        <div class="card-title">
+                            <i class="ph-bold ph-test-tube"></i>
+                            <h3>الفحوصات المقترحة</h3>
+                        </div>
+                        <ul id="recommendedTests" class="medical-list"></ul>
+                    </article>
+
+                    <article class="medical-card">
+                        <div class="card-title">
+                            <i class="ph-bold ph-first-aid-kit"></i>
+                            <h3>توصيات طبية</h3>
+                        </div>
+                        <ul id="medicalRecommendations" class="medical-list"></ul>
+                    </article>
+
+                    <article class="medical-card wide-card" id="multiDiseaseCard" style="display: none;">
+                        <div class="card-title">
+                            <i class="ph-bold ph-chart-bar"></i>
+                            <h3>تحليل الأمراض المحتملة</h3>
+                        </div>
+                        <div id="diseaseBreakdown" class="disease-breakdown">
+                            <!-- يتم إدراج أشرطة الاحتمالات هنا عبر JavaScript -->
+                        </div>
+                    </article>
+                </div>
+
+                <div class="medical-disclaimer">
+                    <i class="ph-bold ph-warning-circle"></i>
+                    <div>
+                        <strong>تنويه طبي مهم</strong>
+                        <p>هذه النتيجة تقييم أولي مساعد ولا تغني عن التشخيص السريري أو الفحوصات المخبرية المعتمدة.</p>
                     </div>
                 </div>
 

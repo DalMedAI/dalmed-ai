@@ -16,6 +16,39 @@ DB_PATH = os.path.join(BACKEND_DIR, "diagnoses.db")
 MODEL_PATH = os.path.join(BACKEND_DIR, "dengue_model.pkl")
 
 DEFAULT_LABELS = ["Dengue", "Malaria", "Typhoid"]
+Disease_AR = {
+    "Dengue": "حمى الضنك",
+    "Malaria": "الملاريا",
+    "Typhoid": "التايفويد",
+    "dengue": "حمى الضنك",
+    "malaria": "الملاريا",
+    "typhoid": "التايفويد",
+}
+Disease_KEYS = {
+    "Dengue": "dengue",
+    "Malaria": "malaria",
+    "Typhoid": "typhoid",
+    "dengue": "dengue",
+    "malaria": "malaria",
+    "typhoid": "typhoid",
+}
+SYMPTOM_AR = {
+    "fever": "الحمى",
+    "headache": "الصداع",
+    "fatigue": "الإرهاق",
+    "vomiting": "القيء أو الغثيان",
+    "eye_pain": "ألم خلف العين",
+    "rash": "الطفح الجلدي",
+    "joint_pain": "آلام المفاصل أو العضلات",
+    "bleeding": "النزيف",
+    "chills": "القشعريرة",
+    "sweating": "التعرق الشديد",
+    "anemia": "فقر الدم",
+    "jaundice": "الاصفرار",
+    "abdominal_pain": "ألم البطن",
+    "loss_of_appetite": "فقدان الشهية",
+    "diarrhea_constipation": "الإسهال أو الإمساك",
+}
 DENGUE_FEATURES = ["eye_pain", "rash", "joint_pain", "bleeding"]
 MALARIA_FEATURES = ["chills", "sweating", "anemia", "jaundice"]
 TYPHOID_FEATURES = ["abdominal_pain", "loss_of_appetite", "diarrhea_constipation"]
@@ -170,8 +203,8 @@ def validate_symptom_logic(values):
         return {
             "can_predict": False,
             "reason": "unrealistic_all_yes",
-            "message": "المدخلات غير واقعية طبياً، لا يمكن إنشاء تشخيص دقيق.",
-            "warnings": ["المدخلات غير واقعية طبياً، لا يمكن إنشاء تشخيص دقيق."],
+            "message": "تم اختيار عدد كبير جداً من الأعراض بصورة غير واقعية طبياً، لذلك لا يمكن إنشاء تقييم دقيق.",
+            "warnings": ["تحذير: عدد الأعراض المختارة مرتفع جداً وقد يجعل النتيجة أقل دقة."],
         }
 
     if selected_count == 0 or symptom_load == 0:
@@ -191,7 +224,10 @@ def validate_symptom_logic(values):
         }
 
     if values["competing_signature_count"] >= 2:
-        warnings.append("توجد أعراض متداخلة بين أكثر من مرض، لذلك تم خفض مستوى الثقة.")
+        warnings.append("تحذير: الأعراض المختارة تتداخل بين عدة أمراض، لذلك قد تكون النتيجة أقل دقة.")
+
+    if symptom_load >= 9:
+        warnings.append("تحذير: عدد الأعراض المختارة مرتفع، لذلك تم تعديل الاحتمالات لتجنب نتيجة مبالغ فيها.")
 
     if values["fever"] < 0.5:
         warnings.append("غياب الحمى يقلل موثوقية التشخيص لهذه الأمراض.")
@@ -222,9 +258,10 @@ def adjust_probabilities(raw_probabilities, values):
     else:
         adjusted = raw
 
-    if values["overlap_penalty"] > 0 or values["symptom_count"] >= 9:
+    if values["overlap_penalty"] > 0 or values["symptom_count"] >= 8:
         uniform = np.ones(3) / 3
-        adjusted = (0.55 * adjusted) + (0.45 * uniform)
+        dilution = 0.50 if values["symptom_count"] >= 10 else 0.40
+        adjusted = ((1 - dilution) * adjusted) + (dilution * uniform)
 
     adjusted = np.maximum(adjusted, 0.001)
     adjusted = adjusted / adjusted.sum()
@@ -232,9 +269,19 @@ def adjust_probabilities(raw_probabilities, values):
     if values["competing_signature_count"] >= 2:
         top_index = int(np.argmax(adjusted))
         top_value = float(adjusted[top_index])
-        if top_value > 0.68:
-            excess = top_value - 0.68
-            adjusted[top_index] = 0.68
+        cap = 0.66 if values["symptom_count"] >= 8 else 0.70
+        if top_value > cap:
+            excess = top_value - cap
+            adjusted[top_index] = cap
+            other_indices = [index for index in range(3) if index != top_index]
+            adjusted[other_indices] += excess / 2
+            adjusted = adjusted / adjusted.sum()
+
+    if values["fever"] < 0.5:
+        top_index = int(np.argmax(adjusted))
+        if adjusted[top_index] > 0.62:
+            excess = float(adjusted[top_index] - 0.62)
+            adjusted[top_index] = 0.62
             other_indices = [index for index in range(3) if index != top_index]
             adjusted[other_indices] += excess / 2
             adjusted = adjusted / adjusted.sum()
@@ -243,8 +290,6 @@ def adjust_probabilities(raw_probabilities, values):
 
 
 def confidence_label(probability, warnings):
-    if warnings and probability < 0.85:
-        probability = min(probability, 0.74)
     if probability >= 0.75:
         return "High Confidence"
     if probability >= 0.45:
@@ -255,17 +300,80 @@ def confidence_label(probability, warnings):
 def get_advice(prediction, probability):
     if prediction == 0:
         if probability >= 0.75:
-            return "Dengue indicators are strong. Seek medical assessment and consider CBC/platelet testing."
-        return "Dengue is possible. Monitor warning signs such as bleeding, severe abdominal pain, or persistent vomiting."
+            return "مؤشرات حمى الضنك قوية. يُنصح بمراجعة الطبيب وإجراء صورة دم كاملة وفحص الصفائح."
+        return "حمى الضنك محتملة. راقب علامات الخطر مثل النزيف أو ألم البطن الشديد أو القيء المستمر."
     if prediction == 1:
         if probability >= 0.75:
-            return "Malaria indicators are strong. A rapid malaria test or blood smear is recommended urgently."
-        return "Malaria is possible. Testing is recommended, especially with chills, sweating, anemia, or jaundice."
+            return "مؤشرات الملاريا قوية. يُنصح بإجراء فحص الملاريا السريع أو مسحة الدم بشكل عاجل."
+        return "الملاريا محتملة. يُنصح بالفحص خصوصاً عند وجود قشعريرة أو تعرق أو فقر دم أو اصفرار."
     if prediction == 2:
         if probability >= 0.75:
-            return "Typhoid indicators are strong. Medical review and appropriate laboratory testing are recommended."
-        return "Typhoid is possible. Review hydration, gastrointestinal symptoms, and fever duration with a clinician."
-    return "Symptoms are not specific enough. Please consult a healthcare professional for proper evaluation."
+            return "مؤشرات التايفويد قوية. يُنصح بالمراجعة الطبية وإجراء الفحوصات المخبرية المناسبة."
+        return "التايفويد محتمل. ناقش مدة الحمى وأعراض الجهاز الهضمي والترطيب مع الطبيب."
+    return "الأعراض غير كافية لتحديد مرض بعينه. يُرجى مراجعة مختص صحي للتقييم."
+
+
+def disease_ar_name(disease):
+    return Disease_AR.get(disease, "غير محدد")
+
+
+def selected_symptom_names(values, names):
+    return [SYMPTOM_AR[name] for name in names if values.get(name, 0) >= 0.5]
+
+
+def generate_ai_analysis(disease, values):
+    disease_key = Disease_KEYS.get(disease, "")
+    groups = {
+        "dengue": DENGUE_FEATURES,
+        "malaria": MALARIA_FEATURES,
+        "typhoid": TYPHOID_FEATURES,
+    }
+    matched = selected_symptom_names(values, groups.get(disease_key, []))
+    shared = selected_symptom_names(values, ["fever", "headache", "fatigue", "vomiting"])
+    evidence = matched + [item for item in shared if item not in matched]
+    if not evidence:
+        return "اعتمد التحليل على نمط عام من الأعراض، لكنه غير نوعي بما يكفي ويحتاج إلى فحص طبي ومخبري."
+    evidence_text = "، ".join(evidence[:5])
+    return f"توقع النظام {disease_ar_name(disease)} لأن الأعراض المختارة تتوافق مع نمط يشمل: {evidence_text}."
+
+
+def calculate_risk_level(values):
+    score = 0
+    score += 2 if values["fever"] >= 0.75 else 1 if values["fever"] >= 0.5 else 0
+    score += 3 if values["bleeding"] >= 0.75 else 0
+    score += 2 if values["sweating"] >= 0.75 else 0
+    score += 1 if values["loss_of_appetite"] >= 0.75 else 0
+    score += 1 if values["vomiting"] >= 0.75 else 0
+    score += 1 if values["abdominal_pain"] >= 0.75 else 0
+    score += 2 if values["symptom_count"] >= 8 else 1 if values["symptom_count"] >= 5 else 0
+
+    if score >= 7:
+        return {
+            "key": "high",
+            "label": "مرتفعة",
+            "description": "توجد مؤشرات تستدعي مراجعة طبية عاجلة، خصوصاً عند ظهور نزيف أو تدهور عام.",
+        }
+    if score >= 4:
+        return {
+            "key": "medium",
+            "label": "متوسطة",
+            "description": "الأعراض تحتاج متابعة دقيقة وفحوصات تأكيدية إذا استمرت أو ازدادت.",
+        }
+    return {
+        "key": "low",
+        "label": "منخفضة",
+        "description": "المؤشرات الحالية أقل خطورة، لكن استمرار الأعراض يتطلب استشارة طبية.",
+    }
+
+
+def recommended_tests_for(disease):
+    disease_key = Disease_KEYS.get(disease, "")
+    tests = {
+        "dengue": ["فحص NS1", "صورة دم كاملة CBC", "عد الصفائح الدموية"],
+        "malaria": ["مسحة دم للملاريا", "الفحص السريع للملاريا"],
+        "typhoid": ["فحص Widal", "مزرعة الدم"],
+    }
+    return tests.get(disease_key, ["فحوصات سريرية ومخبرية يحددها الطبيب"])
 
 
 def generate_medical_recommendations(disease, confidence):
@@ -366,8 +474,22 @@ def no_prediction_result(patient_name, message, warnings):
     return {
         "prediction": None,
         "predicted_disease": None,
+        "predicted_disease_ar": "غير محدد",
         "probability": 0,
         "message": message,
+        "ai_analysis": "لا توجد بيانات كافية أو منطقية لإنتاج تحليل طبي موثوق.",
+        "risk_level": {
+            "key": "low",
+            "label": "منخفضة",
+            "description": "لا يمكن تقدير مستوى الخطورة بدقة قبل إدخال أعراض واقعية وكافية.",
+        },
+        "recommended_tests": ["مراجعة الطبيب لتحديد الفحوصات المناسبة"],
+        "general_recommendations": [
+            "اشرب كمية كافية من السوائل.",
+            "احصل على الراحة.",
+            "راجع الطبيب إذا استمرت الأعراض.",
+            "اذهب إلى المستشفى عند ظهور أعراض شديدة.",
+        ],
         "severity_level": "No Prediction",
         "disease_breakdown": {
             "dengue": 0,
@@ -424,7 +546,7 @@ def predict():
 
     try:
         data = request.get_json() or {}
-        patient_name = data.get("patient_name", "Patient")
+        patient_name = data.get("patient_name", "المريض")
         features_df, feature_values = build_feature_frame(data, TRAINING_FEATURES)
 
         validation = validate_symptom_logic(feature_values)
@@ -445,16 +567,23 @@ def predict():
         probability = float(probabilities[prediction])
         probability_percent = round(probability * 100, 2)
         severity_level = confidence_label(probability, validation_warnings)
+        disease_ar = disease_ar_name(detected_disease)
 
         result = {
             "prediction": prediction,
             "predicted_disease": detected_disease,
+            "predicted_disease_ar": disease_ar,
             "probability": probability_percent,
-            "message": (
-                f"{patient_name}, the symptom pattern is most consistent with "
-                f"{detected_disease} at {probability_percent}%. This is a screening result, "
-                "not a final diagnosis."
-            ),
+            "message": f"{patient_name}، نمط الأعراض يتوافق غالباً مع {disease_ar} بنسبة {probability_percent}%. هذه نتيجة فحص أولي وليست تشخيصاً نهائياً.",
+            "ai_analysis": generate_ai_analysis(detected_disease, feature_values),
+            "risk_level": calculate_risk_level(feature_values),
+            "recommended_tests": recommended_tests_for(detected_disease),
+            "general_recommendations": [
+                "اشرب السوائل بانتظام لتقليل خطر الجفاف.",
+                "احصل على راحة كافية وتجنب المجهود الشديد.",
+                "راجع الطبيب إذا استمرت الأعراض أو ازدادت خلال 24 إلى 48 ساعة.",
+                "اذهب إلى المستشفى فوراً عند ظهور نزيف، دوخة شديدة، قيء مستمر، تشنجات، أو تدهور عام.",
+            ],
             "severity_level": severity_level,
             "disease_breakdown": {
                 "dengue": round(float(probabilities[0]) * 100, 2),
