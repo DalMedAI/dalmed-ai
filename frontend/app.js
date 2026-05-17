@@ -99,13 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
     malaria: ['chills', 'sweating', 'anemia', 'jaundice'],
     typhoid: ['abdominal_pain', 'loss_of_appetite', 'diarrhea_constipation']
   };
-  const arabicNumberFormatter = new Intl.NumberFormat('ar-EG', {
+  const englishNumberFormatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 1
   });
 
-  function toArabicPercent(value) {
+  function toEnglishPercent(value) {
     const number = Number(value || 0);
-    return `${arabicNumberFormatter.format(number)}٪`;
+    return `${englishNumberFormatter.format(number)}%`;
   }
 
   function escapeHtml(value) {
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
       progressFill.style.width = `${data.probability}%`;
     }, 300);
 
-    const formattedProbability = toArabicPercent(data.probability);
+    const formattedProbability = toEnglishPercent(data.probability);
     progressText.textContent = formattedProbability;
     progressInside.textContent = formattedProbability;
 
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="stat-bar-container">
                   <div class="stat-bar ${probabilityClass(value)}" style="width: ${value}%"></div>
               </div>
-              <div class="stat-percentage">${toArabicPercent(value)}</div>
+              <div class="stat-percentage">${toEnglishPercent(value)}</div>
           </div>
         `;
       }).join('');
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const renderList = items => Array.isArray(items) && items.length
         ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
         : '<ul><li>لا توجد توصيات علاجية محددة.</li></ul>';
-      const recConfidence = toArabicPercent(parseFloat(String(rec.confidence || '0').replace('%', '')));
+      const recConfidence = toEnglishPercent(parseFloat(String(rec.confidence || '0').replace('%', '')));
 
       personalAdviceText.innerHTML = `
         <strong>التوصيات الطبية (${recConfidence}):</strong>
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p><strong>إخلاء مسؤولية:</strong> ${escapeHtml(rec.disclaimer)}</p>
       `;
     } else {
-      personalAdviceText.innerHTML = `<strong>بناءً على نتيجتك (${toArabicPercent(data.probability)}):</strong> ${escapeHtml(data.medical_advice)}`;
+      personalAdviceText.innerHTML = `<strong>بناءً على نتيجتك (${toEnglishPercent(data.probability)}):</strong> ${escapeHtml(data.medical_advice)}`;
     }
   }
 });

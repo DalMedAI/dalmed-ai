@@ -10,11 +10,13 @@ import matplotlib.pyplot as plt
 
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -106,14 +108,27 @@ def validate_dataset(df):
 
 
 def build_model():
+    return build_pipeline(
+        CalibratedClassifierCV(
+            estimator=build_random_forest(),
+            method="sigmoid",
+            cv=5,
+        )
+    )
+
+
+def build_preprocessor():
     scaler = ColumnTransformer(
         transformers=[
             ("scaled_numeric", StandardScaler(), TRAINING_FEATURES),
         ],
         remainder="drop",
     )
+    return scaler
 
-    forest = RandomForestClassifier(
+
+def build_random_forest():
+    return RandomForestClassifier(
         n_estimators=700,
         max_depth=8,
         min_samples_leaf=4,
@@ -122,18 +137,66 @@ def build_model():
         n_jobs=-1,
     )
 
-    calibrated_forest = CalibratedClassifierCV(
-        estimator=forest,
-        method="sigmoid",
-        cv=5,
-    )
 
+def build_pipeline(classifier):
     return Pipeline(
         steps=[
-            ("preprocess", scaler),
-            ("classifier", calibrated_forest),
+            ("preprocess", build_preprocessor()),
+            ("classifier", classifier),
         ]
     )
+
+
+def build_comparison_models():
+    return {
+        "Decision Tree": build_pipeline(
+            DecisionTreeClassifier(
+                class_weight="balanced",
+                random_state=42,
+            )
+        ),
+        "SVM": build_pipeline(
+            SVC(
+                class_weight="balanced",
+                random_state=42,
+            )
+        ),
+    }
+
+
+def evaluate_model(name, model, X_test, y_test):
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    print(f"\n{name} Evaluation")
+    print("-" * (len(name) + 11))
+    print(f"{name} Accuracy: {accuracy * 100:.2f}%")
+    print(classification_report(y_test, y_pred, target_names=LABELS))
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, y_pred, labels=[0, 1, 2]))
+
+    return {
+        "Algorithm Name": name,
+        "Accuracy Result": f"{accuracy * 100:.2f}%",
+        "accuracy": accuracy,
+        "predictions": y_pred,
+    }
+
+
+def print_comparison_table(results):
+    comparison_df = pd.DataFrame(
+        [
+            {
+                "Algorithm Name": result["Algorithm Name"],
+                "Accuracy Result": result["Accuracy Result"],
+            }
+            for result in results
+        ]
+    )
+
+    print("\nMachine Learning Algorithm Comparison")
+    print("-------------------------------------")
+    print(comparison_df.to_string(index=False))
 
 
 def save_plot(filename):
@@ -190,15 +253,34 @@ def main():
     model = build_model()
     sample_weights = calculate_sample_weights(X_train, y_train)
 
+    comparison_results = []
+    for algorithm_name, comparison_model in build_comparison_models().items():
+        print(f"\nTraining {algorithm_name} comparison model...")
+        comparison_model.fit(X_train, y_train, classifier__sample_weight=sample_weights)
+        comparison_results.append(evaluate_model(algorithm_name, comparison_model, X_test, y_test))
+
     print("Training calibrated RandomForest model...")
     model.fit(X_train, y_train, classifier__sample_weight=sample_weights)
 
-    print("Evaluating...")
+    print("\nEvaluating calibrated RandomForest production model...")
     y_pred = model.predict(X_test)
     probabilities = model.predict_proba(X_test)
-    print(f"Accuracy: {accuracy_score(y_test, y_pred) * 100:.2f}%")
+    random_forest_accuracy = accuracy_score(y_test, y_pred)
+    print(f"Random Forest Accuracy: {random_forest_accuracy * 100:.2f}%")
     print(classification_report(y_test, y_pred, target_names=LABELS))
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, y_pred, labels=[0, 1, 2]))
     print(f"Mean max probability: {np.max(probabilities, axis=1).mean() * 100:.2f}%")
+
+    comparison_results.append(
+        {
+            "Algorithm Name": "Random Forest",
+            "Accuracy Result": f"{random_forest_accuracy * 100:.2f}%",
+            "accuracy": random_forest_accuracy,
+            "predictions": y_pred,
+        }
+    )
+    print_comparison_table(comparison_results)
 
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1, 2])
     plt.figure(figsize=(9, 7))
